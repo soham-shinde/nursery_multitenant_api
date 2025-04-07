@@ -33,6 +33,7 @@ import com.api.nursery_system.request.CreateUserRequest;
 import com.api.nursery_system.response.ApiResponse;
 import com.api.nursery_system.service.user.IUserService;
 import com.api.nursery_system.service.venture.IVentureService;
+import com.api.nursery_system.util.Constants;
 import com.api.nursery_system.util.HelperMethods;
 
 import jakarta.validation.Valid;
@@ -43,9 +44,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserController {
 
-    // Constants for status messages
-    private static final String SUCCESS_STATUS = "success";
-    private static final String ERROR_STATUS = "error";
+
 
     private final IUserService userService;
     private final IVentureService ventureService;
@@ -73,7 +72,6 @@ public class UserController {
             newUser.setContactNo(request.getContactNo());
             newUser.setAddress(request.getAddress());
             newUser.setRole(userRole);
-            System.out.println(userRole.getRoleId());
             if (userRole.getRoleId() == 1L) {
                 String tenantId = HelperMethods.generateTenantId();
                 newUser.setTenantId(tenantId);
@@ -87,10 +85,10 @@ public class UserController {
                 newUser.setTenantId("public");
                 userService.createUser(newUser);
             }
-            ApiResponse response = new ApiResponse(SUCCESS_STATUS, "User created successfully",newUser);
+            ApiResponse response = new ApiResponse(Constants.SUCCESS_STATUS, "User created successfully",newUser);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            ApiResponse response = new ApiResponse(ERROR_STATUS, "Failed to create user: " + e.getMessage());
+            ApiResponse response = new ApiResponse(Constants.ERROR_STATUS, "Failed to create user: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
@@ -106,13 +104,13 @@ public class UserController {
     public ResponseEntity<ApiResponse> updateUser(@PathVariable Long userId, @Valid @RequestBody User user) {
         try {
             User updatedUser = userService.updateUser(userId, user);
-            ApiResponse response = new ApiResponse(SUCCESS_STATUS, "User updated successfully", updatedUser);
+            ApiResponse response = new ApiResponse(Constants.SUCCESS_STATUS, "User updated successfully", updatedUser);
             return ResponseEntity.ok(response);
         } catch (ResourceNotFoundException ex) {
-            ApiResponse response = new ApiResponse(ERROR_STATUS, ex.getMessage());
+            ApiResponse response = new ApiResponse(Constants.ERROR_STATUS, ex.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         } catch (Exception e) {
-            ApiResponse response = new ApiResponse(ERROR_STATUS, "Failed to update user: " + e.getMessage());
+            ApiResponse response = new ApiResponse(Constants.ERROR_STATUS, "Failed to update user: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
@@ -127,13 +125,13 @@ public class UserController {
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable Long userId) {
         try {
             userService.deleteUser(userId);
-            ApiResponse response = new ApiResponse(SUCCESS_STATUS, "User deleted successfully");
+            ApiResponse response = new ApiResponse(Constants.SUCCESS_STATUS, "User deleted successfully");
             return ResponseEntity.ok(response);
         } catch (ResourceNotFoundException ex) {
-            ApiResponse response = new ApiResponse(ERROR_STATUS, ex.getMessage());
+            ApiResponse response = new ApiResponse(Constants.ERROR_STATUS, ex.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         } catch (Exception e) {
-            ApiResponse response = new ApiResponse(ERROR_STATUS, "Failed to delete user: " + e.getMessage());
+            ApiResponse response = new ApiResponse(Constants.ERROR_STATUS, "Failed to delete user: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
@@ -148,13 +146,13 @@ public class UserController {
     public ResponseEntity<ApiResponse> getUserById(@PathVariable Long userId) {
         try {
             User user = userService.getUserById(userId);
-            ApiResponse response = new ApiResponse(SUCCESS_STATUS, user);
+            ApiResponse response = new ApiResponse(Constants.SUCCESS_STATUS, user);
             return ResponseEntity.ok(response);
         } catch (ResourceNotFoundException ex) {
-            ApiResponse response = new ApiResponse(ERROR_STATUS, ex.getMessage());
+            ApiResponse response = new ApiResponse(Constants.ERROR_STATUS, ex.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         } catch (Exception e) {
-            ApiResponse response = new ApiResponse(ERROR_STATUS, "Failed to fetch user: " + e.getMessage());
+            ApiResponse response = new ApiResponse(Constants.ERROR_STATUS, "Failed to fetch user: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
@@ -168,10 +166,10 @@ public class UserController {
     public ResponseEntity<ApiResponse> getAllUsers() {
         try {
             List<User> users = userService.getAllUsers();
-            ApiResponse response = new ApiResponse(SUCCESS_STATUS, users);
+            ApiResponse response = new ApiResponse(Constants.SUCCESS_STATUS, users);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            ApiResponse response = new ApiResponse(ERROR_STATUS, "Failed to fetch users: " + e.getMessage());
+            ApiResponse response = new ApiResponse(Constants.ERROR_STATUS, "Failed to fetch users: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
@@ -187,13 +185,13 @@ public class UserController {
     public ResponseEntity<ApiResponse> login(@RequestParam String userName, @RequestParam String password) {
         try {
             UserDto userDto = userService.login(userName, password);
-            ApiResponse response = new ApiResponse(SUCCESS_STATUS, userDto);
+            ApiResponse response = new ApiResponse(Constants.SUCCESS_STATUS, userDto);
             return ResponseEntity.ok(response);
         } catch (InvalidCredentialsException ex) {
-            ApiResponse response = new ApiResponse(ERROR_STATUS, ex.getMessage());
+            ApiResponse response = new ApiResponse(Constants.ERROR_STATUS, ex.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         } catch (Exception e) {
-            ApiResponse response = new ApiResponse(ERROR_STATUS, "Failed to login: " + e.getMessage());
+            ApiResponse response = new ApiResponse(Constants.ERROR_STATUS, "Failed to login: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
@@ -211,7 +209,7 @@ public class UserController {
         String errorMsg = ex.getBindingResult().getFieldErrors().stream()
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.joining(", "));
-        ApiResponse response = new ApiResponse(ERROR_STATUS, errorMsg);
+        ApiResponse response = new ApiResponse(Constants.ERROR_STATUS, errorMsg);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 

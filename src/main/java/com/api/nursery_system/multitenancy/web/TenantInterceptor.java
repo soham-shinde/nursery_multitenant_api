@@ -14,32 +14,32 @@ import lombok.AllArgsConstructor;
 @Component
 @AllArgsConstructor
 public class TenantInterceptor implements HandlerInterceptor {
-  
+
     private final HttpHeaderTenantResolver tenantResolver;
+    
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
             throws Exception {
-       clear();
+        clear();
     }
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
             ModelAndView modelAndView) throws Exception {
-        clear(); 
+        clear();
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-                var tenantId =  tenantResolver.resolveTenantIdentifier(request);
+        var tenantId = tenantResolver.resolveTenantIdentifier(request);
 
-                System.err.println(tenantId);
-            TenantContextHolder.setTenantIdentifier(tenantId);
+        TenantContextHolder.setTenantIdentifier(tenantId);
         return true;
     }
 
     private void clear() {
-        TenantContextHolder.clear(); 
+        TenantContextHolder.clear();
     }
-    
+
 }

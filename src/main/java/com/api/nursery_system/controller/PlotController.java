@@ -24,6 +24,7 @@ import com.api.nursery_system.request.PlotRequest;
 import com.api.nursery_system.request.PlotTaskRequest;
 import com.api.nursery_system.response.ApiResponse;
 import com.api.nursery_system.service.plot.PlotService;
+import com.api.nursery_system.util.Constants;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -48,11 +49,11 @@ public class PlotController {
           
             Plot createdPlot = plotService.createPlot(request);
             PlotDto plotDto = PlotDto.from(createdPlot);
-            return ResponseEntity.ok(new ApiResponse("success", "Plot created successfully", plotDto));
+            return ResponseEntity.ok(new ApiResponse(Constants.SUCCESS_STATUS, "Plot created successfully", plotDto));
         } catch (Exception e) {
             // Handle exceptions gracefully and return a meaningful error message.
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse("error", "Failed to create plot: " + e.getMessage()));
+                    .body(new ApiResponse(Constants.ERROR_STATUS, "Failed to create plot: " + e.getMessage()));
         }
     }
 
@@ -65,10 +66,10 @@ public class PlotController {
         try {
             PlotTask createdTask = plotService.createPlotTask(request);
             PlotTaskDto taskDto = PlotTaskDto.from(createdTask);
-            return ResponseEntity.ok(new ApiResponse("success", "Plot task created successfully", taskDto));
+            return ResponseEntity.ok(new ApiResponse(Constants.SUCCESS_STATUS, "Plot task created successfully", taskDto));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse("error", "Failed to create plot task: " + e.getMessage()));
+                    .body(new ApiResponse(Constants.ERROR_STATUS, "Failed to create plot task: " + e.getMessage()));
         }
     }
 
@@ -81,10 +82,10 @@ public class PlotController {
         try {
             Plot updatedPlot = plotService.updatePlot(plotId, request);
             PlotDto plotDto = PlotDto.from(updatedPlot);
-            return ResponseEntity.ok(new ApiResponse("success", "Plot updated successfully", plotDto));
+            return ResponseEntity.ok(new ApiResponse(Constants.SUCCESS_STATUS, "Plot updated successfully", plotDto));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse("error", "Failed to update plot: " + e.getMessage()));
+                    .body(new ApiResponse(Constants.ERROR_STATUS, "Failed to update plot: " + e.getMessage()));
         }
     }
 
@@ -98,13 +99,13 @@ public class PlotController {
             // Here, convert the provided status String to the PlotStatus enum as needed.
             Plot updatedPlot = plotService.updatePlotStatus(plotId, status);
             PlotDto plotDto = PlotDto.from(updatedPlot);
-            return ResponseEntity.ok(new ApiResponse("success", "Plot status updated successfully", plotDto));
+            return ResponseEntity.ok(new ApiResponse(Constants.SUCCESS_STATUS, "Plot status updated successfully", plotDto));
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest()
-                    .body(new ApiResponse("error", "Invalid plot status provided."));
+                    .body(new ApiResponse(Constants.ERROR_STATUS, "Invalid plot status provided."));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse("error", "Failed to update plot status: " + e.getMessage()));
+                    .body(new ApiResponse(Constants.ERROR_STATUS, "Failed to update plot status: " + e.getMessage()));
         }
     }
 
@@ -115,10 +116,10 @@ public class PlotController {
     public ResponseEntity<ApiResponse> softDeletePlot(@PathVariable String plotId) {
         try {
             plotService.softDeletePlot(plotId);
-            return ResponseEntity.ok(new ApiResponse("success", "Plot deleted successfully"));
+            return ResponseEntity.ok(new ApiResponse(Constants.SUCCESS_STATUS, "Plot deleted successfully"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse("error", "Failed to delete plot: " + e.getMessage()));
+                    .body(new ApiResponse(Constants.ERROR_STATUS, "Failed to delete plot: " + e.getMessage()));
         }
     }
 
@@ -131,10 +132,10 @@ public class PlotController {
         try {
             PlotTask updatedTask = plotService.updatePlotTask(plotTaskId, request);
             PlotTaskDto taskDto = PlotTaskDto.from(updatedTask);
-            return ResponseEntity.ok(new ApiResponse("success", "Plot task updated successfully", taskDto));
+            return ResponseEntity.ok(new ApiResponse(Constants.SUCCESS_STATUS, "Plot task updated successfully", taskDto));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse("error", "Failed to update plot task: " + e.getMessage()));
+                    .body(new ApiResponse(Constants.ERROR_STATUS, "Failed to update plot task: " + e.getMessage()));
         }
     }
 
@@ -148,13 +149,13 @@ public class PlotController {
             // Convert the status String to the TaskStatus enum as needed.
             PlotTask updatedTask = plotService.updatePlotTaskStatus(plotTaskId, status);
             PlotTaskDto taskDto = PlotTaskDto.from(updatedTask);
-            return ResponseEntity.ok(new ApiResponse("success", "Plot task status updated successfully", taskDto));
+            return ResponseEntity.ok(new ApiResponse(Constants.SUCCESS_STATUS, "Plot task status updated successfully", taskDto));
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest()
-                    .body(new ApiResponse("error", "Invalid task status provided."));
+                    .body(new ApiResponse(Constants.ERROR_STATUS, "Invalid task status provided."));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse("error", "Failed to update plot task status: " + e.getMessage()));
+                    .body(new ApiResponse(Constants.ERROR_STATUS, "Failed to update plot task status: " + e.getMessage()));
         }
     }
 
@@ -165,10 +166,10 @@ public class PlotController {
     public ResponseEntity<ApiResponse> softDeletePlotTask(@PathVariable Long plotTaskId) {
         try {
             plotService.softDeletePlotTask(plotTaskId);
-            return ResponseEntity.ok(new ApiResponse("success", "Plot task deleted successfully"));
+            return ResponseEntity.ok(new ApiResponse(Constants.SUCCESS_STATUS, "Plot task deleted successfully"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse("error", "Failed to delete plot task: " + e.getMessage()));
+                    .body(new ApiResponse(Constants.ERROR_STATUS, "Failed to delete plot task: " + e.getMessage()));
         }
     }
 
@@ -180,10 +181,10 @@ public class PlotController {
         try {
             List<Plot> plots = plotService.getActivePlots();
             List<PlotDto> plotDtos = plots.stream().map(PlotDto::from).toList();
-            return ResponseEntity.ok(new ApiResponse("success", plotDtos));
+            return ResponseEntity.ok(new ApiResponse(Constants.SUCCESS_STATUS, plotDtos));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse("error", "Failed to fetch active plots: " + e.getMessage()));
+                    .body(new ApiResponse(Constants.ERROR_STATUS, "Failed to fetch active plots: " + e.getMessage()));
         }
     }
 
@@ -195,10 +196,10 @@ public class PlotController {
         try {
             Plot plot = plotService.getActivePlotById(plotId);
             PlotDto plotDto = PlotDto.from(plot);
-            return ResponseEntity.ok(new ApiResponse("success", plotDto));
+            return ResponseEntity.ok(new ApiResponse(Constants.SUCCESS_STATUS, plotDto));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ApiResponse("error", "Plot not found: " + e.getMessage()));
+                    .body(new ApiResponse(Constants.ERROR_STATUS, "Plot not found: " + e.getMessage()));
         }
     }
 
@@ -210,10 +211,10 @@ public class PlotController {
         try {
             List<PlotTask> tasks = plotService.getPlotTaskByPlotId(plotId);
             List<PlotTaskDto> taskDtos = tasks.stream().map(PlotTaskDto::from).toList();
-            return ResponseEntity.ok(new ApiResponse("success", taskDtos));
+            return ResponseEntity.ok(new ApiResponse(Constants.SUCCESS_STATUS, taskDtos));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse("error", "Failed to fetch plot tasks: " + e.getMessage()));
+                    .body(new ApiResponse(Constants.ERROR_STATUS, "Failed to fetch plot tasks: " + e.getMessage()));
         }
     }
 
@@ -221,6 +222,6 @@ public class PlotController {
     // Exception handler for validation errors
     @ExceptionHandler
     public ResponseEntity<ApiResponse> handleValidationExceptions(Exception ex) {
-        return ResponseEntity.badRequest().body(new ApiResponse("error", "Validation error: " + ex.getMessage()));
+        return ResponseEntity.badRequest().body(new ApiResponse(Constants.ERROR_STATUS, "Validation error: " + ex.getMessage()));
     }
 }

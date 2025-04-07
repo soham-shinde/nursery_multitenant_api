@@ -18,7 +18,6 @@ public final class TenantContextHolder {
     }
 
     public static void setTenantIdentifier(String tenant) {
-        // Assert.hasText(tenant, "tenant cannot be empty");
         log.trace("Setting current tenant to: {}", tenant);
         tenantIdentifier.set(Objects.requireNonNullElse(tenant, "public"));
     }
