@@ -1,16 +1,4 @@
-#!/bin/bash
 
-# Install required packages (if not already installed)
-sudo yum update -y
-sudo yum install git docker maven -y
-sudo service docker start
-sudo usermod -a -G docker ec2-user
-
-# Clone the GitHub repository
-
-
-# Build the Spring Boot project
-./mvnw clean package -DskipTests
 
 # Build Docker image
 docker build -t nursery-api .
