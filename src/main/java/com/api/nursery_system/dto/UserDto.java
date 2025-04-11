@@ -25,6 +25,7 @@ public class UserDto {
         dto.address = user.getAddress();
         dto.tenantId = user.getTenantId();
         dto.roleName = user.getRole() != null ? user.getRole().getRoleName() : null;
+        
         return dto;
     }
 }

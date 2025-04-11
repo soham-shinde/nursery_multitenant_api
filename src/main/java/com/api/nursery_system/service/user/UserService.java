@@ -6,9 +6,11 @@ import org.springframework.stereotype.Service;
 
 import com.api.nursery_system.dto.UserDto;
 import com.api.nursery_system.entity.User;
+import com.api.nursery_system.entity.Venture;
 import com.api.nursery_system.exception.InvalidCredentialsException;
 import com.api.nursery_system.exception.ResourceNotFoundException;
 import com.api.nursery_system.repository.UserRepository;
+import com.api.nursery_system.repository.VentureRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService implements IUserService {
 
     private final UserRepository userRepository;
+    private final VentureRepository ventureRepository;
 
     @Override
     public User createUser(User user) {
@@ -56,7 +59,11 @@ public class UserService implements IUserService {
     public UserDto login(String userName, String password) {
         User user = userRepository.findByEmailIdAndPassword(userName, password)
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid username or password"));
-        return UserDto.from(user);
+
+        UserDto userDto = UserDto.from(user);
+        Venture venture = ventureRepository.findByUserId(user.getUserId()).orElseGet(() -> null);
+        userDto.setVentureDetails(venture);
+        return userDto;
     }
 
 }
