@@ -54,7 +54,7 @@ public class UserService implements IUserService {
 
     @Override
     public UserDto login(String userName, String password) {
-        User user = userRepository.findByUserNameAndPassword(userName, password)
+        User user = userRepository.findByEmailIdAndPassword(userName, password)
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid username or password"));
         return UserDto.from(user);
     }
