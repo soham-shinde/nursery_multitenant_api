@@ -7,9 +7,7 @@ sudo service docker start
 sudo usermod -a -G docker ec2-user
 
 # Clone the GitHub repository
-git clone https://github.com/soham-shinde/nursery_multitenant_api.git
 
-cd nursery_multitenant_api
 
 # Build the Spring Boot project
 ./mvnw clean package -DskipTests
