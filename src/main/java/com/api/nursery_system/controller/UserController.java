@@ -30,6 +30,7 @@ import com.api.nursery_system.exception.InvalidCredentialsException;
 import com.api.nursery_system.exception.ResourceNotFoundException;
 import com.api.nursery_system.repository.RoleRepository;
 import com.api.nursery_system.request.CreateUserRequest;
+import com.api.nursery_system.request.UserLoginRequest;
 import com.api.nursery_system.response.ApiResponse;
 import com.api.nursery_system.service.user.IUserService;
 import com.api.nursery_system.service.venture.IVentureService;
@@ -182,9 +183,9 @@ public class UserController {
      * @return ApiResponse with UserDto if login is successful.
      */
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login(@RequestParam String userName, @RequestParam String password) {
+    public ResponseEntity<ApiResponse> login(@RequestBody UserLoginRequest request) {
         try {
-            UserDto userDto = userService.login(userName, password);
+            UserDto userDto = userService.login(request.getEmailId(), request.getPassword());
             ApiResponse response = new ApiResponse(Constants.SUCCESS_STATUS, userDto);
             return ResponseEntity.ok(response);
         } catch (InvalidCredentialsException ex) {
