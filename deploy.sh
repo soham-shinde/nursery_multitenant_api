@@ -1,4 +1,5 @@
 
+cp ../.env ./  
 
 # Build Docker image
 docker build -t nursery-api .
