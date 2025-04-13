@@ -35,10 +35,5 @@ public class TenantInterceptor extends OncePerRequestFilter {
         }
     }
 
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        // TODO Auto-generated method stub
-        return super.shouldNotFilter(request);
-    }
 
 }
