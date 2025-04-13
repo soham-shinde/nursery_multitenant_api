@@ -6,8 +6,10 @@ import org.springframework.stereotype.Service;
 
 import com.api.nursery_system.entity.Venture;
 import com.api.nursery_system.exception.ResourceNotFoundException;
+import com.api.nursery_system.repository.UserRepository;
 import com.api.nursery_system.repository.VentureRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -15,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class VentureService implements IVentureService {
 
     private final VentureRepository ventureRepository;
+    private final UserRepository userRepository;
 
     @Override
     public Venture createVenture(Venture venture) {
@@ -24,7 +27,7 @@ public class VentureService implements IVentureService {
     @Override
     public Venture updateVenture(Long ventureId, Venture venture) {
         Venture existingVenture = ventureRepository.findById(ventureId)
-                .orElseThrow(() -> new ResourceNotFoundException("Venture not found with id: " + ventureId));
+                .orElseThrow(() -> new ResourceNotFoundException("Venture not found " + ventureId));
 
         existingVenture.setVentureName(venture.getVentureName());
         existingVenture.setAddress(venture.getAddress());
@@ -46,10 +49,13 @@ public class VentureService implements IVentureService {
         return ventureRepository.save(existingVenture);
     }
 
+    @Transactional
     @Override
     public void deleteVenture(Long ventureId) {
         Venture existingVenture = ventureRepository.findById(ventureId)
                 .orElseThrow(() -> new ResourceNotFoundException("Venture not found with id: " + ventureId));
+
+        userRepository.deleteById(existingVenture.getUserId());
         ventureRepository.delete(existingVenture);
     }
 

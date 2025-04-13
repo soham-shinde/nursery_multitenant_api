@@ -1,5 +1,12 @@
+docker rmi $(docker images -q)
+
+
+
+git pull origin main
+
 
 cp ../.env ./  
+
 
 # Build Docker image
 docker build -t nursery-api .
