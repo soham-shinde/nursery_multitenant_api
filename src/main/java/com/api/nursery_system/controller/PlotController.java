@@ -233,7 +233,7 @@ public class PlotController {
 
     @GetMapping("/active-or-closed-today")
     public ResponseEntity<ApiResponse> getActiveAndRecentlyClosed() {
-        List<Plot> plots = plotService.getActiveAndRecentlyClosed();
+        List<Plot> plots = plotService.getActiveAndClosedToday();
         return ResponseEntity.ok(new ApiResponse(Constants.SUCCESS_STATUS, plots.stream().map(PlotDto::from).toList()));
     }
 

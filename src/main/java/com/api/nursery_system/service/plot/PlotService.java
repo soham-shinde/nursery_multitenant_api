@@ -153,17 +153,17 @@ public class PlotService implements IPlotService {
         return plotTaskRepository.findByIsDeletedFalse();
     }
 
-
     @Override
-    public List<Plot> getActiveAndRecentlyClosed() {
+    public List<Plot> getActiveAndClosedToday() {
         List<Plot> result = new ArrayList<>();
-        // all ACTIVE & not deleted
+
+        // 1. All ACTIVE & not deleted
         result.addAll(plotRepository.findByStatusAndIsDeletedFalse(Plot.PlotStatus.ACTIVE));
 
-        // all CLOSED & not deleted & updated today
-        LocalDateTime start = LocalDate.now().atStartOfDay();
-        LocalDateTime end   = LocalDate.now().atTime(LocalTime.MAX);
-        result.addAll(plotRepository.findClosedToday(Plot.PlotStatus.CLOSED, start, end));
+        // 2. All CLOSED & not deleted & updated today
+        LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
+        LocalDateTime endOfToday   = LocalDate.now().atTime(LocalTime.MAX);
+        result.addAll(plotRepository.findClosedToday(startOfToday, endOfToday));
 
         return result;
     }

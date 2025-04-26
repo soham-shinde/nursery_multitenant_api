@@ -31,7 +31,7 @@ public interface IPlotService {
 
     List<PlotTask> getPlotTaskByPlotId(String plotId);
 
-    List<Plot> getActiveAndRecentlyClosed();
+    List<Plot> getActiveAndClosedToday();
     List<Plot> getOlderClosedPlots();
 
 }

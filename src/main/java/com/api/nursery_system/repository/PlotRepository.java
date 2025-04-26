@@ -16,15 +16,15 @@ public interface PlotRepository  extends JpaRepository<Plot, String> {
     Optional<Plot> findTopByOrderByPlotIdDesc();
     
   // 1) All ACTIVE & not deleted
+  // 1) All non-deleted plots with a given status
   List<Plot> findByStatusAndIsDeletedFalse(Plot.PlotStatus status);
 
-  // 2) CLOSED & not deleted, updated today
+  // 2) All non-deleted CLOSED plots updated today
   @Query("SELECT p FROM Plot p " +
-         " WHERE p.status = :status" +
+         " WHERE p.status = com.api.nursery_system.entity.Plot.PlotStatus.CLOSED" +
          "   AND p.isDeleted = false" +
          "   AND p.updatedAt BETWEEN :startOfDay AND :endOfDay")
   List<Plot> findClosedToday(
-      @Param("status") Plot.PlotStatus status,
       @Param("startOfDay") LocalDateTime startOfDay,
       @Param("endOfDay")   LocalDateTime endOfDay
   );
