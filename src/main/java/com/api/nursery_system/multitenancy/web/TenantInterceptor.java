@@ -2,6 +2,7 @@ package com.api.nursery_system.multitenancy.web;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -19,7 +20,7 @@ import lombok.AllArgsConstructor;
 public class TenantInterceptor extends OncePerRequestFilter {
 
     private final HttpHeaderTenantResolver tenantResolver;
-
+    private final Logger logger;
     private void clear() {
         TenantContextHolder.clear();
     }
@@ -27,8 +28,10 @@ public class TenantInterceptor extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        tenantResolver.resolveTenantIdentifier(request);
+       var tenantId =  tenantResolver.resolveTenantIdentifier(request);
         try {
+            TenantContextHolder.setTenantIdentifier(tenantId);
+            logger.info("Current request tenantId : {}",tenantId);
             filterChain.doFilter(request, response);
         } finally {
             clear();

@@ -1,5 +1,6 @@
 package com.api.nursery_system.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,14 +30,11 @@ import com.api.nursery_system.util.Constants;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-
 @RestController
 @RequestMapping("/api/plots")
 @RequiredArgsConstructor
 public class PlotController {
     private final PlotService plotService;
-
-
 
     /**
      * Endpoint to create a new Plot.
@@ -45,8 +43,9 @@ public class PlotController {
     @PostMapping
     public ResponseEntity<ApiResponse> createPlot(@Valid @RequestBody PlotRequest request) {
         try {
-            // Generate a new plotId and set it into the request (assume PlotRequest has a setPlotId method)
-          
+            // Generate a new plotId and set it into the request (assume PlotRequest has a
+            // setPlotId method)
+
             Plot createdPlot = plotService.createPlot(request);
             PlotDto plotDto = PlotDto.from(createdPlot);
             return ResponseEntity.ok(new ApiResponse(Constants.SUCCESS_STATUS, "Plot created successfully", plotDto));
@@ -66,7 +65,8 @@ public class PlotController {
         try {
             PlotTask createdTask = plotService.createPlotTask(request);
             PlotTaskDto taskDto = PlotTaskDto.from(createdTask);
-            return ResponseEntity.ok(new ApiResponse(Constants.SUCCESS_STATUS, "Plot task created successfully", taskDto));
+            return ResponseEntity
+                    .ok(new ApiResponse(Constants.SUCCESS_STATUS, "Plot task created successfully", taskDto));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponse(Constants.ERROR_STATUS, "Failed to create plot task: " + e.getMessage()));
@@ -78,7 +78,7 @@ public class PlotController {
      */
     @PutMapping("/{plotId}")
     public ResponseEntity<ApiResponse> updatePlot(@PathVariable String plotId,
-                                                  @Valid @RequestBody PlotRequest request) {
+            @Valid @RequestBody PlotRequest request) {
         try {
             Plot updatedPlot = plotService.updatePlot(plotId, request);
             PlotDto plotDto = PlotDto.from(updatedPlot);
@@ -94,12 +94,14 @@ public class PlotController {
      */
     @PutMapping("/{plotId}/status")
     public ResponseEntity<ApiResponse> updatePlotStatus(@PathVariable String plotId,
-                                                        @RequestParam("status") PlotStatus status) {
+            @RequestParam("status") PlotStatus status, @RequestParam("datetime") LocalDateTime updatedAt,
+            @RequestParam("device") String updateDevice) {
         try {
             // Here, convert the provided status String to the PlotStatus enum as needed.
-            Plot updatedPlot = plotService.updatePlotStatus(plotId, status);
+            Plot updatedPlot = plotService.updatePlotStatus(plotId, status, updatedAt, updateDevice);
             PlotDto plotDto = PlotDto.from(updatedPlot);
-            return ResponseEntity.ok(new ApiResponse(Constants.SUCCESS_STATUS, "Plot status updated successfully", plotDto));
+            return ResponseEntity
+                    .ok(new ApiResponse(Constants.SUCCESS_STATUS, "Plot status updated successfully", plotDto));
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest()
                     .body(new ApiResponse(Constants.ERROR_STATUS, "Invalid plot status provided."));
@@ -128,11 +130,12 @@ public class PlotController {
      */
     @PutMapping("/tasks/{plotTaskId}")
     public ResponseEntity<ApiResponse> updatePlotTask(@PathVariable Long plotTaskId,
-                                                      @Valid @RequestBody PlotTaskRequest request) {
+            @Valid @RequestBody PlotTaskRequest request) {
         try {
             PlotTask updatedTask = plotService.updatePlotTask(plotTaskId, request);
             PlotTaskDto taskDto = PlotTaskDto.from(updatedTask);
-            return ResponseEntity.ok(new ApiResponse(Constants.SUCCESS_STATUS, "Plot task updated successfully", taskDto));
+            return ResponseEntity
+                    .ok(new ApiResponse(Constants.SUCCESS_STATUS, "Plot task updated successfully", taskDto));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponse(Constants.ERROR_STATUS, "Failed to update plot task: " + e.getMessage()));
@@ -144,18 +147,21 @@ public class PlotController {
      */
     @PutMapping("/tasks/{plotTaskId}/status")
     public ResponseEntity<ApiResponse> updatePlotTaskStatus(@PathVariable Long plotTaskId,
-                                                            @RequestParam("status") TaskStatus status) {
+            @RequestParam("status") TaskStatus status, @RequestParam("datetime") LocalDateTime updatedAt,
+            @RequestParam("device") String updateDevice) {
         try {
             // Convert the status String to the TaskStatus enum as needed.
-            PlotTask updatedTask = plotService.updatePlotTaskStatus(plotTaskId, status);
+            PlotTask updatedTask = plotService.updatePlotTaskStatus(plotTaskId, status, updatedAt, updateDevice);
             PlotTaskDto taskDto = PlotTaskDto.from(updatedTask);
-            return ResponseEntity.ok(new ApiResponse(Constants.SUCCESS_STATUS, "Plot task status updated successfully", taskDto));
+            return ResponseEntity
+                    .ok(new ApiResponse(Constants.SUCCESS_STATUS, "Plot task status updated successfully", taskDto));
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest()
                     .body(new ApiResponse(Constants.ERROR_STATUS, "Invalid task status provided."));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse(Constants.ERROR_STATUS, "Failed to update plot task status: " + e.getMessage()));
+                    .body(new ApiResponse(Constants.ERROR_STATUS,
+                            "Failed to update plot task status: " + e.getMessage()));
         }
     }
 
@@ -218,10 +224,26 @@ public class PlotController {
         }
     }
 
-
     // Exception handler for validation errors
     @ExceptionHandler
     public ResponseEntity<ApiResponse> handleValidationExceptions(Exception ex) {
-        return ResponseEntity.badRequest().body(new ApiResponse(Constants.ERROR_STATUS, "Validation error: " + ex.getMessage()));
+        return ResponseEntity.badRequest()
+                .body(new ApiResponse(Constants.ERROR_STATUS, "Validation error: " + ex.getMessage()));
+    }
+
+    @GetMapping("/active-or-closed-today")
+    public ResponseEntity<ApiResponse> getActiveAndRecentlyClosed() {
+        List<Plot> plots = plotService.getActiveAndRecentlyClosed();
+        return ResponseEntity.ok(new ApiResponse(Constants.SUCCESS_STATUS, plots.stream().map(PlotDto::from).toList()));
+    }
+
+    /**
+     * GET /api/plots/closed-before-today
+     * returns all CLOSED plots updated before today
+     */
+    @GetMapping("/closed-before-today")
+    public ResponseEntity<ApiResponse> getOlderClosedPlots() {
+        List<Plot> plots = plotService.getOlderClosedPlots();
+        return ResponseEntity.ok(new ApiResponse(Constants.SUCCESS_STATUS, plots.stream().map(PlotDto::from).toList()));
     }
 }

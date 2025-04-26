@@ -42,7 +42,9 @@ public class PlotTask {
     private String workerName;
 
     private LocalDateTime insertedAt;
-
+    
+    private LocalDateTime updatedAt;
+    private String updatedDevice;
     @Enumerated(EnumType.STRING)
     private TaskStatus status;
 

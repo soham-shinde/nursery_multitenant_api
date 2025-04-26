@@ -3,6 +3,8 @@ CREATE TABLE plot_table (
     plot_title TEXT,
     plot_description TEXT,
     inserted_at TIMESTAMP,
+    updated_device TEXT,
+    updated_at TIMESTAMP,
     is_deleted BOOLEAN DEFAULT FALSE,
     status TEXT CHECK (status IN ('ACTIVE', 'CLOSED'))
 );
@@ -15,6 +17,8 @@ CREATE TABLE plot_task_table (
     assign_to TEXT,
     worker_name TEXT,
     inserted_at TIMESTAMP,
+    updated_device TEXT,
+    updated_at TIMESTAMP,
     status TEXT CHECK (status IN ('ASSIGN', 'IN_PROGRESS', 'COMPLETED')),
     is_deleted BOOLEAN DEFAULT FALSE
 );

@@ -17,6 +17,8 @@ public class PlotTaskDto {
     private LocalDateTime insertedAt;
     private String status; 
     private boolean isDeleted;
+    private LocalDateTime updatedAt;
+    private String updatedDevice;
 
     public static PlotTaskDto from(PlotTask plotTask) {
         PlotTaskDto dto = new PlotTaskDto();
@@ -25,6 +27,8 @@ public class PlotTaskDto {
         dto.taskDescription = plotTask.getTaskDescription();
         dto.assignTo = plotTask.getAssignTo();
         dto.workerName = plotTask.getWorkerName();
+        dto.updatedAt = plotTask.getUpdatedAt();
+        dto.updatedDevice = plotTask.getUpdatedDevice();
         dto.insertedAt = plotTask.getInsertedAt();
         dto.status = plotTask.getStatus() != null ? plotTask.getStatus().name() : null;
         dto.isDeleted = plotTask.isDeleted();

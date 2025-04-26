@@ -1,7 +1,6 @@
 package com.api.nursery_system.controller;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -9,10 +8,7 @@ import org.flywaydb.core.Flyway;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +25,7 @@ import com.api.nursery_system.exception.InvalidCredentialsException;
 import com.api.nursery_system.exception.ResourceNotFoundException;
 import com.api.nursery_system.repository.RoleRepository;
 import com.api.nursery_system.request.CreateUserRequest;
+import com.api.nursery_system.request.EmailRequest;
 import com.api.nursery_system.request.UserLoginRequest;
 import com.api.nursery_system.response.ApiResponse;
 import com.api.nursery_system.service.user.IUserService;
@@ -43,8 +40,6 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
-
-
 
     private final IUserService userService;
     private final IVentureService ventureService;
@@ -65,7 +60,7 @@ public class UserController {
             Role userRole = roleRepository.findById(request.getRoleId())
                     .orElseThrow(() -> new ResourceNotFoundException("Invalid User Role"));
             User newUser = new User();
-           
+
             newUser.setUserName(request.getUserName());
             newUser.setEmailId(request.getEmailId());
             newUser.setPassword(request.getPassword());
@@ -75,17 +70,17 @@ public class UserController {
             if (userRole.getRoleId() == 1L) {
                 String tenantId = HelperMethods.generateTenantId();
                 newUser.setTenantId(tenantId);
-                
+
                 User createdUser = userService.createUser(newUser);
                 Venture newVenture = request.getVentureDetails();
                 newVenture.setUserId(createdUser.getUserId());
                 ventureService.createVenture(newVenture);
                 createTenantSchema(tenantId);
-            }else{
+            } else {
                 newUser.setTenantId("public");
                 userService.createUser(newUser);
             }
-            ApiResponse response = new ApiResponse(Constants.SUCCESS_STATUS, "User created successfully",newUser);
+            ApiResponse response = new ApiResponse(Constants.SUCCESS_STATUS, "User created successfully", newUser);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             ApiResponse response = new ApiResponse(Constants.ERROR_STATUS, "Failed to create user: " + e.getMessage());
@@ -196,34 +191,31 @@ public class UserController {
         }
     }
 
-    /**
-     * Exception handler for validation errors.
-     * This method captures MethodArgumentNotValidException and returns a meaningful
-     * error message.
-     *
-     * @param ex The validation exception.
-     * @return ApiResponse with error details.
-     */
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        String errorMsg = ex.getBindingResult().getFieldErrors().stream()
-                .map(FieldError::getDefaultMessage)
-                .collect(Collectors.joining(", "));
-        ApiResponse response = new ApiResponse(Constants.ERROR_STATUS, errorMsg);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponse> resetPassword(@RequestBody EmailRequest request) {
+        try {
+
+            return ResponseEntity.ok(new ApiResponse(Constants.SUCCESS_STATUS, "request Send"));
+        }  catch (Exception e) {
+            ApiResponse response = new ApiResponse(Constants.ERROR_STATUS, "Failed : " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
+
+   
 
     private void createTenantSchema(String schema) {
         // Create the schema if it doesn't exist
         jdbcTemplate.execute("CREATE SCHEMA IF NOT EXISTS " + schema);
 
         // Run Flyway migrations for the new tenant schema.
-        // Assumes that migration scripts are located under src/main/resources/db/migration/tenant
+        // Assumes that migration scripts are located under
+        // src/main/resources/db/migration/tenant
         Flyway flyway = Flyway.configure()
-            .dataSource(dataSource)
-            .schemas(schema)
-            .locations("classpath:db/migration/tenant")
-            .load();
+                .dataSource(dataSource)
+                .schemas(schema)
+                .locations("classpath:db/migration/tenant")
+                .load();
         flyway.migrate();
     }
 }

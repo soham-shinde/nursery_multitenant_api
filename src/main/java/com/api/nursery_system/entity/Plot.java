@@ -32,6 +32,8 @@ public class Plot {
     private String plotDescription;
 
     private LocalDateTime insertedAt;
+    private LocalDateTime updatedAt;
+    private String updatedDevice;
 
     private boolean isDeleted;
 

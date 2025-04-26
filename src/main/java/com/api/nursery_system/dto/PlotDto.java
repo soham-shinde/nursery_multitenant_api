@@ -13,6 +13,8 @@ public class PlotDto {
     private String plotTitle;
     private String plotDescription;
     private LocalDateTime insertedAt;
+    private LocalDateTime updatedAt;
+    private String updatedDevice;
     private boolean isDeleted;
     private String status; // Using String for simplicity
     private List<PlotTaskDto> plotTasks;
@@ -23,6 +25,8 @@ public class PlotDto {
         dto.plotTitle = plot.getPlotTitle();
         dto.plotDescription = plot.getPlotDescription();
         dto.insertedAt = plot.getInsertedAt();
+        dto.updatedAt = plot.getUpdatedAt();
+        dto.updatedDevice = plot.getUpdatedDevice();
         dto.isDeleted = plot.isDeleted();
         dto.status = plot.getStatus() != null ? plot.getStatus().name() : null;
         if (plot.getPlotTask() != null) {

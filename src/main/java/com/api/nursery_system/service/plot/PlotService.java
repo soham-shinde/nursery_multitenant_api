@@ -1,5 +1,9 @@
 package com.api.nursery_system.service.plot;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -109,18 +113,22 @@ public class PlotService implements IPlotService {
     }
 
     @Override
-    public Plot updatePlotStatus(String plotId, PlotStatus status) {
+    public Plot updatePlotStatus(String plotId, PlotStatus status,LocalDateTime updatedAt, String updateDevice) {
         Plot newUpdatePlot = plotRepository.findById(plotId)
                 .orElseThrow(() -> new ResourceNotFoundException("Plot not found with id: " + plotId));
         newUpdatePlot.setStatus(status);
+        newUpdatePlot.setUpdatedAt(updatedAt);
+        newUpdatePlot.setUpdatedDevice(updateDevice);
         return plotRepository.save(newUpdatePlot);
     }
 
     @Override
-    public PlotTask updatePlotTaskStatus(Long plotTaskId, TaskStatus status) {
+    public PlotTask updatePlotTaskStatus(Long plotTaskId, TaskStatus status,LocalDateTime updatedAt, String updateDevice) {
         PlotTask newPlotTask = plotTaskRepository.findById(plotTaskId)
                 .orElseThrow(() -> new ResourceNotFoundException("Plot Task not found with id: " + plotTaskId));
         newPlotTask.setStatus(status);
+        newPlotTask.setUpdatedAt(updatedAt);
+        newPlotTask.setUpdatedDevice(updateDevice);
 
         return plotTaskRepository.save(newPlotTask);
     }
@@ -143,6 +151,28 @@ public class PlotService implements IPlotService {
     @Override
     public List<PlotTask> getPlotTaskByPlotId(String plotId) {
         return plotTaskRepository.findByIsDeletedFalse();
+    }
+
+
+    @Override
+    public List<Plot> getActiveAndRecentlyClosed() {
+        List<Plot> result = new ArrayList<>();
+        // all ACTIVE & not deleted
+        result.addAll(plotRepository.findByStatusAndIsDeletedFalse(Plot.PlotStatus.ACTIVE));
+
+        // all CLOSED & not deleted & updated today
+        LocalDateTime start = LocalDate.now().atStartOfDay();
+        LocalDateTime end   = LocalDate.now().atTime(LocalTime.MAX);
+        result.addAll(plotRepository.findClosedToday(Plot.PlotStatus.CLOSED, start, end));
+
+        return result;
+    }
+
+    @Override
+    public List<Plot> getOlderClosedPlots() {
+        // CLOSED & not deleted & updated before today
+        LocalDateTime start = LocalDate.now().atStartOfDay();
+        return plotRepository.findByStatusAndIsDeletedFalseAndUpdatedAtBefore(Plot.PlotStatus.CLOSED, start);
     }
 
 }
